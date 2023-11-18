@@ -10,15 +10,10 @@ from sklearn.ensemble import RandomForestClassifier
 
 # Load the data
 data = pd.read_csv('spam.csv', encoding='UTF-8')
+print(data.head())
+
 data = data.drop(["Unnamed: 2", "Unnamed: 3", "Unnamed: 4"], axis=1)
 data = data.rename(columns={"v2": "text", "v1": "label"})
-
-# Print data information
-print(data.head())
-print("\nData between rows 1990 and 2000:")
-print(data[1990:2000])
-print("\nLabel value counts:")
-print(data['label'].value_counts())
 
 # Remove punctuation and stopwords from text
 def text_process(text):
@@ -28,15 +23,20 @@ def text_process(text):
 
 data['text'] = data['text'].apply(text_process)
 
+# Print data information
+print("\nData between rows 1990 and 2000:")
+print(data)
+print("\nLabel value counts:")
+print(data['label'].value_counts())
+
+
 # Convert text data into TF-IDF vectors
 vectorizer = TfidfVectorizer()
 vectors = vectorizer.fit_transform(data['text'])
 print("Vector shape:", vectors.shape)
 
-# Split the dataset into train and test sets
 X_train, X_test, y_train, y_test = train_test_split(vectors, data['label'], test_size=0.15, random_state=111)
 
-# Initialize classification models
 mnb = MultinomialNB(alpha=0.2)
 dtc = DecisionTreeClassifier(min_samples_split=7, random_state=111)
 rfc = RandomForestClassifier(n_estimators=31, random_state=111)
@@ -72,3 +72,4 @@ for k, v in clfs.items():
     
     pred_scores_word_vectors.append((k, [accuracy, precision, recall, f1, confusion_mat]))
     print(f"{k}:\nAccuracy: {accuracy}\nPrecision: {precision}\nRecall: {recall}\nF1 Score: {f1}\nConfusion Matrix:\n{confusion_mat}\n")
+
